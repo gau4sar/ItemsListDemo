@@ -46,7 +46,7 @@
                 android:resource="@xml/file_paths" />
         </provider>
         \
-        <activity android:name=".items.EditItemDetails"></activity>
+        <activity android:name=".items.edit.EditItemDetailsActivity"></activity>
     </application>
 
 </manifest>

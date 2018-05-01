@@ -27,6 +27,16 @@ class CreateItemActivity : AppCompatActivity() {
 
     private lateinit var dbHelper: SqlLiteDbHelper
 
+    // Listener which handle the mode (from camera/gallery) selected for adding item image
+    private var selectImageItemSrcListener = { openCamera: Boolean ->
+        if (openCamera) {
+            if (MPermissionChecker.grantCameraAccess(this, ImageUtils.REQUEST_CAMERA))
+                selectedPhotoPath = ImageUtils.intentCamera(this, ImageUtils.CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE)
+        } else {
+            if (MPermissionChecker.grantGalleryAccess(this, ImageUtils.REQUEST_GALLERY))
+                ImageUtils.intentGallery(this, ImageUtils.SELECT_IMAGE_FROM_GALLERY)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,7 +47,7 @@ class CreateItemActivity : AppCompatActivity() {
 
         imageViewAddItem.setOnClickListener {
             val fm = fragmentManager
-            val dialogFragment = SelectImageDialog(imageSelectListener)
+            val dialogFragment = SelectImageDialog(selectImageItemSrcListener)
             dialogFragment.show(fm, "SelectImageDialogFragment")
         }
 
@@ -79,21 +89,13 @@ class CreateItemActivity : AppCompatActivity() {
 
     private var imagePath: String? = null
 
-    private var imageSelectListener = { openCamera: Boolean ->
-        if (openCamera) {
-            if (MPermissionChecker.grantCameraAccess(this, ImageUtils.REQUEST_CAMERA))
-                selectedPhotoPath = ImageUtils.intentCamera(this, ImageUtils.CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE)
-        } else {
-            if (MPermissionChecker.grantGalleryAccess(this, ImageUtils.REQUEST_GALLERY))
-                ImageUtils.intentGallery(this, ImageUtils.SELECT_IMAGE_FROM_GALLERY)
-        }
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
         super.onActivityResult(requestCode, resultCode, intent)
 
         if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == ImageUtils.CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE || requestCode == ImageUtils.SELECT_IMAGE_FROM_GALLERY) {
+            // Handle callback from image selected from Gallery/Camera
+            if (requestCode == ImageUtils.CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE ||
+                    requestCode == ImageUtils.SELECT_IMAGE_FROM_GALLERY) {
                 var imageUri: Uri? = null
                 // get image path
                 when (requestCode) {
@@ -124,7 +126,7 @@ class CreateItemActivity : AppCompatActivity() {
         }
     }
 
-
+    // Handle runtime permission callback
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
