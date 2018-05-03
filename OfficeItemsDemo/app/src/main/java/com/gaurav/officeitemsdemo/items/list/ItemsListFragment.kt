@@ -37,20 +37,22 @@ class ItemsListFragment : Fragment() {
 
         if (cursor.moveToFirst()) {
             while (!cursor.isAfterLast) {
+                val id = (cursor.position + 1).toString()
+                Log.d(TAG, "Inserting list Item Id : $id")
                 val name = cursor.getString(cursor.getColumnIndex(SqlLiteDbHelper.ITEM_COLUMN_NAME))
                 val description = cursor.getString(cursor.getColumnIndex(SqlLiteDbHelper.ITEM_COLUMN_DESCRIPTION))
                 val imagePath = cursor.getString(cursor.getColumnIndex(SqlLiteDbHelper.ITEM_COLUMN_IMAGE_PATH))
                 val cost = cursor.getString(cursor.getColumnIndex(SqlLiteDbHelper.ITEM_COLUMN_COST))
                 val location = cursor.getString(cursor.getColumnIndex(SqlLiteDbHelper.ITEM_COLUMN_LOCATION))
 
-                itemList.add(ListItemModel(cursor.position.toString(), name, description, imagePath, location, cost))
+                itemList.add(ListItemModel(id, name, description, imagePath, location, cost))
                 cursor.moveToNext()
             }
         }
 
         cursor.close()
 
-        Log.d(TAG, "Items list size :  ${itemList.size}")
+        Log.d(TAG, "Items list size :  ${itemList.size} ")
 
 
         linearLayoutManager = LinearLayoutManager(activity!!.baseContext)

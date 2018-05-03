@@ -14,8 +14,8 @@ public class MPermissionChecker {
 
     private static String TAG = "MPermissionChecker";
     private static final String[] PERMISSION_CAMERA = {Manifest.permission.CAMERA};
-    private static final String[] PERMISSIONS_CONTACT = {Manifest.permission.READ_CONTACTS};
-    private static final String[] PERMISSION_GALLERY = {Manifest.permission.READ_EXTERNAL_STORAGE};
+    private static final String[] PERMISSION_GALLERY = {Manifest.permission.READ_EXTERNAL_STORAGE,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
     //GALLERY PERMISSION ACCESS
     public static boolean grantGalleryAccess(Activity activity, final int requestCode) {
@@ -45,6 +45,8 @@ public class MPermissionChecker {
     private static void requestGalleryPermission(final Activity activity, final int requestCode) {
 
         if (ActivityCompat.shouldShowRequestPermissionRationale(activity,
+                Manifest.permission.READ_EXTERNAL_STORAGE) &&
+                ActivityCompat.shouldShowRequestPermissionRationale(activity,
                 Manifest.permission.READ_EXTERNAL_STORAGE)) {
 
             AlertDialog.Builder builder = new AlertDialog.Builder(activity);
@@ -75,59 +77,6 @@ public class MPermissionChecker {
     }
 
 
-    // CONTACT PERMISSION CHECKER
-    public static boolean grantContact(Activity activity, final int requestCode) {
-
-        // Verify that all required contact permissions have been granted.
-        if (ActivityCompat.checkSelfPermission(activity.getBaseContext(), Manifest.permission.READ_CONTACTS)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            // Contacts permissions have not been granted.
-            //Crashlytics.log(Log.DEBUG, TAG, "Contact permissions has NOT been granted. Requesting permissions.");
-            requestContactsPermissions(activity, requestCode);
-
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Requests the Contacts permissions.
-     * If the permission has been denied previously, a SnackBar will prompt the user to grant the
-     * permission, otherwise it is requested directly.
-     */
-    private static void requestContactsPermissions(final Activity activity, final int requestCode) {
-
-        if (ActivityCompat.shouldShowRequestPermissionRationale(activity,
-                Manifest.permission.READ_CONTACTS)) {
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-            builder.setTitle("Accessing Contact");
-            builder.setMessage("Permission needed to access contact. Allow access ?");
-
-            builder.setPositiveButton("Okay", (dialog, which) -> {
-                ActivityCompat.requestPermissions(activity, PERMISSIONS_CONTACT, requestCode);
-                dialog.cancel();
-            });
-
-            builder.setNegativeButton("Cancel", (dialog, which) -> {
-                //No button click
-                dialog.cancel();
-            }).show();
-
-            // Provide an additional rationale to the user if the permission was not granted
-            // and the user would benefit from additional context for the use of the permission.
-            // For example, if the request has been denied previously.
-            //Crashlytics.log(Log.DEBUG, TAG, "Displaying contacts permission rationale to provide additional context.");
-
-            //TODO: Display a SnackBar with an explanation and a button to trigger the request.
-
-        } else {
-            // Contact permissions have not been granted yet. Request them directly.
-            ActivityCompat.requestPermissions(activity, PERMISSIONS_CONTACT, requestCode);
-        }
-
-    }
 
     private final static int currentAPIVersion = Build.VERSION.SDK_INT;
 
@@ -190,23 +139,5 @@ public class MPermissionChecker {
     }
 
 
-    /**
-     * Check that all given permissions have been granted by verifying that each entry in the
-     * given array is of the value {@link PackageManager#PERMISSION_GRANTED}.
-     **/
-    public static boolean verifyPermissions(int[] grantResults) {
-        // At least one result must be checked.
-        if (grantResults.length < 1) {
-            return false;
-        }
-
-        // Verify that each required permission has been granted, otherwise return false.
-        for (int result : grantResults) {
-            if (result == PackageManager.PERMISSION_GRANTED) {
-                return true;
-            }
-        }
-        return false;
-    }
 
 }

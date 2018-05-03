@@ -7,31 +7,35 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-
 import com.gaurav.officeitemsdemo.R
-import com.gaurav.officeitemsdemo.data.SqlLiteDbHelper
 import com.gaurav.officeitemsdemo.items.IFragmentInteractionListener
+import com.gaurav.officeitemsdemo.model.ListItemModel
+import com.gaurav.officeitemsdemo.utils.GeneralUtils
+import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.fragment_display_item_details.*
+import java.io.File
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+
+private const val ARG_ITEM = "item"
 
 /**
  * A simple [Fragment] subclass.
+ * Activities that contain this fragment must implement the
+ * [IFragmentInteractionListener] interface
+ * to handle interaction events.
  * Use the [DisplayItemDetailsFragment.newInstance] factory method to
  * create an instance of this fragment.
  *
  */
 class DisplayItemDetailsFragment : Fragment() {
-    private var dbHelper: SqlLiteDbHelper? = null
 
+    private lateinit var itemDetails: ListItemModel
     private var interactionListener: IFragmentInteractionListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            dbHelper = it.get(ARG_PARAM1) as SqlLiteDbHelper?
+            itemDetails = it.getParcelable(ARG_ITEM)
         }
     }
 
@@ -44,7 +48,19 @@ class DisplayItemDetailsFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
+        Picasso.get()
+                .load(File(itemDetails.image))
+                .resize(GeneralUtils.IMG_WIDTH * 4, GeneralUtils.IMG_HEIGHT * 4)
+                .centerCrop().into(imageViewItem)
 
+        textViewName.text = itemDetails.name
+        textViewDescription.text = itemDetails.description
+        textViewCost.text = itemDetails.cost
+        textViewLocation.text = itemDetails.location
+
+        buttonEditItem.setOnClickListener {
+            interactionListener?.onFragmentInteraction(it.id, itemDetails)
+        }
     }
 
     override fun onAttach(context: Context) {
@@ -66,14 +82,14 @@ class DisplayItemDetailsFragment : Fragment() {
          * Use this factory method to create a new instance of
          * this fragment using the provided parameters.
          *
-         * @param dbHelper Parameter.
+         * @param ListItemModel Parameter.
          * @return A new instance of fragment DisplayItemDetailsFragment.
          */
         @JvmStatic
-        fun newInstance(dbHelper: SqlLiteDbHelper) =
+        fun newInstance(itemList: ListItemModel) =
                 DisplayItemDetailsFragment().apply {
                     arguments = Bundle().apply {
-                        putString(ARG_PARAM1, dbHelper.toString())
+                        putParcelable(ARG_ITEM, itemList)
                     }
                 }
     }

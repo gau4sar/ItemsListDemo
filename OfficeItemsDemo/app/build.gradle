@@ -27,7 +27,13 @@ android {
 }
 
 repositories {
+    mavenCentral()
     maven { url 'https://maven.fabric.io/public' }
+}
+
+apply plugin: 'org.jetbrains.kotlin.android.extensions'
+androidExtensions {
+    experimental = true
 }
 
 dependencies {
@@ -52,8 +58,7 @@ dependencies {
     }
 
     compile 'com.squareup.picasso:picasso:2.71828'
-}
 
-repositories {
-    mavenCentral()
+    compile 'org.jetbrains.anko:anko-common:0.9'
+
 }

@@ -9,46 +9,79 @@ import android.view.ViewGroup
 
 import com.gaurav.officeitemsdemo.R
 import com.gaurav.officeitemsdemo.items.IFragmentInteractionListener
+import com.gaurav.officeitemsdemo.model.ListItemModel
+import com.gaurav.officeitemsdemo.utils.GeneralUtils
+import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.create_item.*
+import java.io.File
 
-// TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+private const val LIST_ITEM = "param1"
 
 /**
  * A simple [Fragment] subclass.
  * Activities that contain this fragment must implement the
- * [EditItemFragment.OnFragmentInteractionListener] interface
+ * [IFragmentInteractionListener] interface
  * to handle interaction events.
  * Use the [EditItemFragment.newInstance] factory method to
  * create an instance of this fragment.
  *
  */
 class EditItemFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+
+    private lateinit var listItem: ListItemModel
+
     private var interactionListener: IFragmentInteractionListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+            listItem = it.getParcelable(LIST_ITEM)
         }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_edit_item, container, false)
+        return inflater.inflate(R.layout.create_item, container, false)
     }
 
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        //interactionListener?.onFragmentInteraction(uri)
+        Picasso.get()
+                .load(File(listItem.image))
+                .resize(GeneralUtils.IMG_WIDTH * 2, GeneralUtils.IMG_HEIGHT)
+                .centerCrop().into(imageViewAddItem)
+
+        editTextName.setText(listItem.name)
+        editTextDescription.setText(listItem.description)
+        editTextCost.setText(listItem.cost)
+        editTextLocation.setText(listItem.location)
+
+        buttonAddItem.text = "SAVE"
+
+        buttonAddItem.setOnClickListener {
+            if(editTextName.text.isNotEmpty() && editTextDescription.text.isNotEmpty() && editTextCost.text.isNotEmpty()
+                    && editTextLocation.text.isNotEmpty()) {
+
+                val itemModel = ListItemModel(
+                        listItem.id,
+                        editTextName.text.toString(),
+                        editTextDescription.text.toString(),
+                        listItem.image,
+                        editTextLocation.text.toString(),
+                        editTextCost.text.toString()
+                )
+
+                interactionListener?.onFragmentInteraction(it.id, itemModel)
+            }
+        }
+
+        imageViewAddItem.setOnClickListener {
+            interactionListener?.onFragmentInteraction(it.id)
+        }
 
     }
 
@@ -73,16 +106,13 @@ class EditItemFragment : Fragment() {
          * this fragment using the provided parameters.
          *
          * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
          * @return A new instance of fragment EditItemFragment.
          */
-        // TODO: Rename and change types and number of parameters
         @JvmStatic
-        fun newInstance(param1: String, param2: String) =
+        fun newInstance(listItem : ListItemModel) =
                 EditItemFragment().apply {
                     arguments = Bundle().apply {
-                        putString(ARG_PARAM1, param1)
-                        putString(ARG_PARAM2, param2)
+                        putParcelable(LIST_ITEM, listItem)
                     }
                 }
     }

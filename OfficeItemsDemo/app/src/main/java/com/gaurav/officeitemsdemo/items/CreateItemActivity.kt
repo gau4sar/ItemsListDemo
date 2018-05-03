@@ -17,7 +17,7 @@ import com.gaurav.officeitemsdemo.utils.ImageUtils
 import com.gaurav.officeitemsdemo.utils.MPermissionChecker
 import com.gaurav.officeitemsdemo.utils.SelectImageDialog
 import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.activity_create_item.*
+import kotlinx.android.synthetic.main.create_item.*
 import java.io.File
 
 class CreateItemActivity : AppCompatActivity() {
@@ -28,7 +28,7 @@ class CreateItemActivity : AppCompatActivity() {
     private lateinit var dbHelper: SqlLiteDbHelper
 
     // Listener which handle the mode (from camera/gallery) selected for adding item image
-    private var selectImageItemSrcListener = { openCamera: Boolean ->
+    var selectImageItemSrcListener = { openCamera: Boolean ->
         if (openCamera) {
             if (MPermissionChecker.grantCameraAccess(this, ImageUtils.REQUEST_CAMERA))
                 selectedPhotoPath = ImageUtils.intentCamera(this, ImageUtils.CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE)
@@ -40,10 +40,12 @@ class CreateItemActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_create_item)
+        setContentView(R.layout.create_item)
 
         GeneralUtils.setToolbarTitle(this@CreateItemActivity, "Create New Item")
         GeneralUtils.setToolbarBackButton(this@CreateItemActivity)
+
+        buttonAddItem.text = "Add Item"
 
         imageViewAddItem.setOnClickListener {
             val fm = fragmentManager

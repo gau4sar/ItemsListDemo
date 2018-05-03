@@ -45,8 +45,8 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
-        \
-        <activity android:name=".items.edit.EditItemDetailsActivity"></activity>
+
+        <activity android:name=".items.edit.ItemDetailsActivity" />
     </application>
 
 </manifest>

@@ -11,6 +11,7 @@ import android.net.Uri
 import android.os.Build
 import android.provider.DocumentsContract
 import android.provider.MediaStore
+import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.util.Log
@@ -22,6 +23,8 @@ import io.fabric.sdk.android.Fabric.TAG
 import java.io.*
 
 object GeneralUtils {
+
+    val BUNDLE_ITEM_ID = "item_id"
 
     val IMG_WIDTH = 250
     val IMG_HEIGHT = 250
@@ -47,6 +50,10 @@ object GeneralUtils {
         }
     }
 
+    fun openFragment(activity: AppCompatActivity, containerViewId: Int, fragment: Fragment) {
+        activity.supportFragmentManager.beginTransaction().replace(containerViewId, fragment)
+                .commitAllowingStateLoss()
+    }
 
     // IMAGE PROCESSING methods
 

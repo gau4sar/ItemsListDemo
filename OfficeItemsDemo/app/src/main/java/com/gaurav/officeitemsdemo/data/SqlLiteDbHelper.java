@@ -5,11 +5,14 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+
+import static io.fabric.sdk.android.Fabric.TAG;
 
 public class SqlLiteDbHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "ListItems.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
     public static final String ITEM_TABLE_NAME = "items";
     public static final String ITEM_COLUMN_ID = "_id";
     public static final String ITEM_COLUMN_NAME = "name";
@@ -52,10 +55,12 @@ public class SqlLiteDbHelper extends SQLiteOpenHelper {
         contentValues.put(ITEM_COLUMN_COST, cost);
         contentValues.put(ITEM_COLUMN_LOCATION, location);
         db.insert(ITEM_TABLE_NAME, null, contentValues);
+        db.close();
         return true;
     }
 
-    public boolean updatePerson(Integer id, String name, String description, String imagePath, int cost, String location) {
+    public boolean updateItem(Integer id, String name, String description, String imagePath, int cost, String location) {
+        Log.d(TAG, "Update Item at position : " + id);
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(ITEM_COLUMN_NAME, name);

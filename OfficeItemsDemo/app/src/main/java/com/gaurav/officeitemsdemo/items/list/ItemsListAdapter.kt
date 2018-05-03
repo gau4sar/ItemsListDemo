@@ -1,10 +1,14 @@
 package com.gaurav.officeitemsdemo.items.list
 
 import android.content.Context
+import android.content.Intent
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
+import com.crashlytics.android.Crashlytics.TAG
 import com.gaurav.officeitemsdemo.R
+import com.gaurav.officeitemsdemo.items.edit.ItemDetailsActivity
 import com.gaurav.officeitemsdemo.model.ListItemModel
 import com.gaurav.officeitemsdemo.utils.GeneralUtils
 import com.gaurav.officeitemsdemo.utils.inflate
@@ -48,6 +52,13 @@ class ItemsListAdapter(private val context: Context, private val itemsList: List
             itemView.textViewDescription.text = listItem.description
             itemView.textViewLocation.text = listItem.location
             itemView.textViewCost.text = listItem.cost
+
+            itemView.cardViewItem.setOnClickListener {
+                Log.d(TAG, "List Item Id : ${listItem.id}")
+                val intent = Intent(context, ItemDetailsActivity::class.java)
+                intent.putExtra(GeneralUtils.BUNDLE_ITEM_ID, listItem.id.toInt())
+                context.startActivity(intent)
+            }
         }
 
 
