@@ -2,7 +2,6 @@ package com.gaurav.officeitemsdemo.utils
 
 import android.annotation.TargetApi
 import android.content.Context
-import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
@@ -11,10 +10,12 @@ import android.net.Uri
 import android.os.Build
 import android.provider.DocumentsContract
 import android.provider.MediaStore
+import android.support.transition.Slide
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.util.Log
+import android.view.Gravity
 import android.view.View
 import android.widget.TextView
 import com.crashlytics.android.Crashlytics
@@ -42,26 +43,41 @@ object GeneralUtils {
         val toolbar = currentActivity.findViewById<View>(R.id.app_bar) as Toolbar
         currentActivity.setSupportActionBar(toolbar)
         currentActivity.supportActionBar!!.setDisplayShowTitleEnabled(false)
-        if (toolbar != null) {
-            toolbar.setNavigationIcon(R.drawable.ic_arrow_back)
-            toolbar.setNavigationOnClickListener { v ->
+
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back)
+        toolbar.setNavigationOnClickListener {
+            if (currentActivity.supportFragmentManager.backStackEntryCount == 0)
                 currentActivity.finish()
-            }
+            else
+                currentActivity.supportFragmentManager.popBackStack()
         }
     }
 
-    fun openFragment(activity: AppCompatActivity, containerViewId: Int, fragment: Fragment) {
-        activity.supportFragmentManager.beginTransaction().replace(containerViewId, fragment)
-                .commitAllowingStateLoss()
+    fun attachFragment(activity: AppCompatActivity, containerViewId: Int, fragment: Fragment, addToBackStack: Boolean, isEntryTransitionSlide: Boolean) {
+
+        val slideTransition: Slide?
+
+        if (isEntryTransitionSlide) {
+            slideTransition = Slide(Gravity.END)
+            slideTransition.duration = 250
+        } else {
+            slideTransition = Slide(Gravity.START)
+            slideTransition.duration = 250
+        }
+
+        fragment.enterTransition = slideTransition
+
+        if (addToBackStack) {
+            activity.supportFragmentManager.beginTransaction().replace(containerViewId, fragment)
+                    .addToBackStack(null)
+                    .commit()
+        } else {
+            activity.supportFragmentManager.beginTransaction().replace(containerViewId, fragment)
+                    .commit()
+        }
     }
 
     // IMAGE PROCESSING methods
-
-    fun getByteArray(bmp: Bitmap): ByteArray {
-        val stream = ByteArrayOutputStream()
-        bmp.compress(Bitmap.CompressFormat.JPEG, 100, stream)
-        return stream.toByteArray()
-    }
 
     fun fixImageOrientation(imagePath: String) {
         var orientation = 0

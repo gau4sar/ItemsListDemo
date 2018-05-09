@@ -14,21 +14,17 @@ import com.gaurav.officeitemsdemo.R
 import com.gaurav.officeitemsdemo.data.SqlLiteDbHelper
 import com.gaurav.officeitemsdemo.items.IFragmentInteractionListener
 import com.gaurav.officeitemsdemo.model.ListItemModel
-import com.gaurav.officeitemsdemo.utils.GeneralUtils
-import com.gaurav.officeitemsdemo.utils.GeneralUtils.openFragment
-import com.gaurav.officeitemsdemo.utils.ImageUtils
-import com.gaurav.officeitemsdemo.utils.MPermissionChecker
-import com.gaurav.officeitemsdemo.utils.SelectImageDialog
+import com.gaurav.officeitemsdemo.utils.*
+import com.gaurav.officeitemsdemo.utils.GeneralUtils.attachFragment
 import com.squareup.picasso.Picasso
 import io.fabric.sdk.android.Fabric
 import kotlinx.android.synthetic.main.create_item.*
 import java.io.File
 
-
 class ItemDetailsActivity : AppCompatActivity(), IFragmentInteractionListener {
 
     private val TAG = "ItemDetailsActivity"
-    private lateinit var dbHelper : SqlLiteDbHelper
+    private lateinit var dbHelper: SqlLiteDbHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,7 +55,7 @@ class ItemDetailsActivity : AppCompatActivity(), IFragmentInteractionListener {
 
                 // Add item details to the list
                 val itemList = ListItemModel(listItemId.toString(), name, description, imagePath, location, cost)
-                openFragment(this, R.id.edit_item_fragment_container, DisplayItemDetailsFragment.newInstance(itemList))
+                attachFragment(this, R.id.edit_item_fragment_container, DisplayItemDetailsFragment.newInstance(itemList), false,true)
             }
         } finally {
             if (cursor != null && !cursor.isClosed)
@@ -71,17 +67,17 @@ class ItemDetailsActivity : AppCompatActivity(), IFragmentInteractionListener {
     override fun onFragmentInteraction(viewId: Int, listItem: ListItemModel) {
         when (viewId) {
             R.id.buttonEditItem -> {
-                openFragment(this, R.id.edit_item_fragment_container, EditItemFragment.newInstance(listItem))
+                attachFragment(this, R.id.edit_item_fragment_container, EditItemFragment.newInstance(listItem), true, true)
             }
 
             R.id.buttonAddItem -> {
 
                 // Check if image was changed else use from same image
-                val itemImagePath = if(imagePath == null) listItem.image else imagePath
+                val itemImagePath = if (imagePath == null) listItem.image else imagePath
 
                 // Update the list item details
-                if(dbHelper.updateItem((listItem.id.toInt()), listItem.name, listItem.description, itemImagePath,
-                        listItem.cost.toInt(), listItem.location)) {
+                if (dbHelper.updateItem((listItem.id.toInt()), listItem.name, listItem.description, itemImagePath,
+                                listItem.cost.toInt(), listItem.location)) {
                     Toast.makeText(applicationContext, "Item ${(listItem.id.toInt())} " +
                             "updated successfully", Toast.LENGTH_SHORT).show()
 
@@ -101,7 +97,7 @@ class ItemDetailsActivity : AppCompatActivity(), IFragmentInteractionListener {
     }
 
     override fun onFragmentInteraction(viewId: Int) {
-        when(viewId) {
+        when (viewId) {
             R.id.imageViewAddItem -> {
                 val fm = fragmentManager
                 val dialogFragment = SelectImageDialog(selectImageItemSrcListener)
@@ -114,7 +110,7 @@ class ItemDetailsActivity : AppCompatActivity(), IFragmentInteractionListener {
     private var imagePath: String? = null
 
     // Listener which handle the mode (from camera/gallery) selected for adding item image
-    var selectImageItemSrcListener = { openCamera: Boolean ->
+    private var selectImageItemSrcListener = { openCamera: Boolean ->
         if (openCamera) {
             if (MPermissionChecker.grantCameraAccess(this, ImageUtils.REQUEST_CAMERA))
                 selectedPhotoPath = ImageUtils.intentCamera(this, ImageUtils.CAPTURE_IMAGE_FULLSIZE_ACTIVITY_REQUEST_CODE)
@@ -175,5 +171,18 @@ class ItemDetailsActivity : AppCompatActivity(), IFragmentInteractionListener {
             ImageUtils.REQUEST_GALLERY -> ImageUtils.intentGallery(this, ImageUtils.SELECT_IMAGE_FROM_GALLERY)
         }
     }
+
+
+    /*override fun onBackPressed() {
+        super.onBackPressed()
+
+        val count = supportFragmentManager.backStackEntryCount
+
+        if (count == 0) {
+            super.onBackPressed()
+        } else {
+            supportFragmentManager.popBackStack()
+        }
+    }*/
 
 }
