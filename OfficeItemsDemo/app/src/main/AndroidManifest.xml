@@ -19,7 +19,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name=".mvp.activities.MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -29,7 +29,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".items.CreateItemActivity"
+            android:name="com.gaurav.officeitemsdemo.mvp.activities.AddItemActivity"
             android:screenOrientation="portrait" />
 
         <meta-data

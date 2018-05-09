@@ -17,7 +17,6 @@ import android.view.Surface;
 
 import com.crashlytics.android.Crashlytics;
 import com.gaurav.officeitemsdemo.BuildConfig;
-import com.gaurav.officeitemsdemo.MainActivity;
 
 import java.io.File;
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package com.gaurav.officeitemsdemo.items
+package com.gaurav.officeitemsdemo.mvp.activities
 
 import android.app.Activity
 import android.content.Intent
@@ -7,25 +7,52 @@ import android.net.Uri
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import com.crashlytics.android.Crashlytics
-import com.gaurav.officeitemsdemo.MainActivity
 import com.gaurav.officeitemsdemo.R
-import com.gaurav.officeitemsdemo.data.SqlLiteDbHelper
+import com.gaurav.officeitemsdemo.mvp.data.SqlLiteDbHelper
 import com.gaurav.officeitemsdemo.utils.GeneralUtils
 import com.gaurav.officeitemsdemo.utils.ImageUtils
 import com.gaurav.officeitemsdemo.utils.MPermissionChecker
 import com.gaurav.officeitemsdemo.utils.SelectImageDialog
+import com.gaurav.officeitemsdemo.mvp.activities.view.IAddItemView
+import com.gaurav.officeitemsdemo.mvp.model.AddItemModel
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.create_item.*
 import java.io.File
 
-class CreateItemActivity : AppCompatActivity() {
+class AddItemActivity : AppCompatActivity(), View.OnClickListener, IAddItemView {
 
-    private val TAG = "CreateItemActivity"
+    override fun validateItem() {
+        Toast.makeText(applicationContext, "Please enter all details", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun addItemSuccess() {
+        Toast.makeText(applicationContext, "Item added successfully", Toast.LENGTH_SHORT).show()
+
+        // Route back to Item List View
+        val intent = Intent(applicationContext, MainActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        startActivity(intent)
+    }
+
+    override fun addItemError() {
+        Toast.makeText(applicationContext, "Error : Couldn't add item", Toast.LENGTH_LONG).show()
+    }
+
+    override fun onClick(view: View?) {
+        Log.d(TAG, "Item details : ${editTextName.text} ${editTextDescription.text} $imagePath, ${editTextLocation.text} ${editTextCost.text}")
+
+        addItemModel.addItem(editTextName.text.toString(), editTextDescription.text.toString(),
+                imagePath, editTextLocation.text.toString(), editTextCost.text.toString())
+    }
+
+    private val TAG = "AddItemActivity"
     private var selectedPhotoPath: String? = null
 
     private lateinit var dbHelper: SqlLiteDbHelper
+    private lateinit var addItemModel: AddItemModel
 
     // Listener which handle the mode (from camera/gallery) selected for adding item image
     var selectImageItemSrcListener = { openCamera: Boolean ->
@@ -42,8 +69,9 @@ class CreateItemActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.create_item)
 
-        GeneralUtils.setToolbarTitle(this@CreateItemActivity, "Create New Item")
-        GeneralUtils.setToolbarBackButton(this@CreateItemActivity)
+        // Setup toolbar
+        GeneralUtils.setToolbarTitle(this@AddItemActivity, "Create New Item")
+        GeneralUtils.setToolbarBackButton(this@AddItemActivity)
 
         buttonAddItem.text = "Add Item"
 
@@ -54,40 +82,17 @@ class CreateItemActivity : AppCompatActivity() {
         }
 
         // Initialize db Helper
-        dbHelper = SqlLiteDbHelper(this@CreateItemActivity)
+        dbHelper = SqlLiteDbHelper(this@AddItemActivity)
 
-        // Add/Save new item to the db
-        buttonAddItem.setOnClickListener {
+        // Initialize presenter
+        addItemModel = AddItemModel(this, dbHelper)
 
-            //Front end validation check
-            if(editTextName.text.isNotEmpty() && editTextDescription.text.isNotEmpty() && editTextCost.text.isNotEmpty()
-                && editTextLocation.text.isNotEmpty() && !imagePath.isNullOrEmpty()) {
-
-                // Insert item into the db
-                if (dbHelper.insertItem(
-                                editTextName.text.toString(),
-                                editTextDescription.text.toString(),
-                                imagePath,
-                                Integer.parseInt(editTextCost.text.toString()),
-                                editTextLocation.text.toString())) {
-
-                    Toast.makeText(applicationContext, "Item added successfully", Toast.LENGTH_SHORT).show()
-                } else {
-                    Toast.makeText(applicationContext, "Could not add item", Toast.LENGTH_LONG).show()
-                }
-
-                // Route back to Item List View
-                val intent = Intent(applicationContext, MainActivity::class.java)
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                startActivity(intent)
-
-            } else {
-                Toast.makeText(applicationContext, "Please enter all details", Toast.LENGTH_SHORT).show()
-            }
-
-        }
+        // Set Click listener for Add/Save new item button
+        buttonAddItem.setOnClickListener(this)
     }
 
+
+    // Get imagePath for the selected / captured image
 
     private var imagePath: String? = null
 

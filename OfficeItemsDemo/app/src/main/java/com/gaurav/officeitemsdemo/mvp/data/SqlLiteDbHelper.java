@@ -1,4 +1,4 @@
-package com.gaurav.officeitemsdemo.data;
+package com.gaurav.officeitemsdemo.mvp.data;
 
 import android.content.ContentValues;
 import android.content.Context;

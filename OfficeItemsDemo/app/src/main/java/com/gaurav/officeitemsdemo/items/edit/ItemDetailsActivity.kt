@@ -9,9 +9,9 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import com.crashlytics.android.Crashlytics
-import com.gaurav.officeitemsdemo.MainActivity
 import com.gaurav.officeitemsdemo.R
-import com.gaurav.officeitemsdemo.data.SqlLiteDbHelper
+import com.gaurav.officeitemsdemo.mvp.activities.MainActivity
+import com.gaurav.officeitemsdemo.mvp.data.SqlLiteDbHelper
 import com.gaurav.officeitemsdemo.items.IFragmentInteractionListener
 import com.gaurav.officeitemsdemo.model.ListItemModel
 import com.gaurav.officeitemsdemo.utils.*

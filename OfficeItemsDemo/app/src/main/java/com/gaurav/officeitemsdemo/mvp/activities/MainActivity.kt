@@ -1,9 +1,9 @@
-package com.gaurav.officeitemsdemo
+package com.gaurav.officeitemsdemo.mvp.activities
 
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import com.gaurav.officeitemsdemo.items.CreateItemActivity
+import com.gaurav.officeitemsdemo.R
 import com.gaurav.officeitemsdemo.items.list.ItemsListFragment
 import com.gaurav.officeitemsdemo.utils.GeneralUtils.attachFragment
 import com.gaurav.officeitemsdemo.utils.GeneralUtils.setToolbarTitle
@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity() {
         attachFragment(this, R.id.root_fragment_container, ItemsListFragment(), false, false)
 
         fab.setOnClickListener { view ->
-            startActivity(Intent(this@MainActivity, CreateItemActivity::class.java))
+            startActivity(Intent(this@MainActivity, AddItemActivity::class.java))
         }
     }
 

@@ -8,7 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.gaurav.officeitemsdemo.R
-import com.gaurav.officeitemsdemo.data.SqlLiteDbHelper
+import com.gaurav.officeitemsdemo.mvp.data.SqlLiteDbHelper
 import com.gaurav.officeitemsdemo.model.ListItemModel
 import io.fabric.sdk.android.Fabric.TAG
 import kotlinx.android.synthetic.main.fragment_items_list.*
