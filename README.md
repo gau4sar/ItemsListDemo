@@ -6,5 +6,5 @@ Each item contains the following information
   - Description
   - Cost 
   - Location
-  - Item image (can add from gallery or camera)
+  - Add/Edit item image (From phone gallery/camera)
 
